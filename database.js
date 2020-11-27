@@ -10,15 +10,7 @@ function request(perihal, tabel, query, callback) {
     if (window.location.hostname == "localhost") {
         host = "http://localhost";
     } else { // cek https
-        if (ManggaDB.host.includes("http://")) {
-            if (ManggaDB.host.includes("https://")) {
-                host = "https://" + ManggaDB.host; // standard SSL
-            } else {
-                host = ManggaDB.host;
-            }
-        } else {
-            host = ManggaDB.host;
-        }
+        host = "https://" + ManggaDB.host; // standard SSL
     }
     console.log(host);
     http.open("POST", host, true);
