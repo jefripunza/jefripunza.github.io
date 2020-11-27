@@ -15,6 +15,7 @@ function request(perihal, tabel, query, callback) {
     console.log(host);
     http.open("POST", host, true);
     http.setRequestHeader('Access-Control-Allow-Origin', '*');
+    http.setRequestHeader("Accept", "application/vnd.github.3.raw");
     http.setRequestHeader('Content-type', 'application/json');
 
     http.setRequestHeader('username', ManggaDB.username);
