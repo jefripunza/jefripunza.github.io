@@ -20,6 +20,7 @@ function request(perihal, tabel, query, callback) {
             host = ManggaDB.host;
         }
     }
+    console.log(host);
     http.open("POST", host, true);
     http.setRequestHeader('Content-type', 'application/json');
 
