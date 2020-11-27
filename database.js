@@ -4,7 +4,7 @@ var ManggaDB = {
     apiKey: "07f09syfey8rwejp",
     database: "siap"
 }
-
+console.log("test: 1.0");
 function request(perihal, tabel, query, callback) {
     var host, http = new XMLHttpRequest();
     if (window.location.hostname == "localhost") {
