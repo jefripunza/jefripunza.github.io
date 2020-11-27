@@ -4,19 +4,33 @@ var ManggaDB = {
     apiKey: "07f09syfey8rwejp",
     database: "siap"
 }
-console.log("test: 1.0");
+
 function request(perihal, tabel, query, callback) {
     var host, http = new XMLHttpRequest();
-    if (window.location.hostname == "localhost") {
-        host = "http://localhost";
-    } else { // cek https
-        host = "https://" + ManggaDB.host; // standard SSL
-    }
+    // if (window.location.hostname == "localhost") {
+    // host = "http://localhost";
+    // } else { // cek https
+    host = "https://" + ManggaDB.host; // standard SSL
+    // }
+
+    myHost = "https://" + window.location.hostname;
+
+    // debug(ok)
+    console.log("test: 2.1")
     console.log(host);
+
     http.open("POST", host, true);
-    http.setRequestHeader('Access-Control-Allow-Origin', '*');
-    http.setRequestHeader("Accept", "application/vnd.github.3.raw");
-    http.setRequestHeader('Content-type', 'application/json');
+
+
+    // http.setRequestHeader('Access-Control-Allow-Origin', "*");
+    // http.setRequestHeader('Access-Control-Allow-Credentials', true);
+
+    http.setRequestHeader("Origin", myHost);
+    http.setRequestHeader('Access-Control-Request-Methods', "POST, GET");
+    http.setRequestHeader('Access-Control-Request-Headers', "Content-type, Accept, username, apiKey, database, perihal, tabel, query")
+
+    http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    http.setRequestHeader("Accept", "application/json");
 
     http.setRequestHeader('username', ManggaDB.username);
     http.setRequestHeader('apiKey', ManggaDB.apiKey);
