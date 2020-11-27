@@ -1,11 +1,211 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>test</title>
+    <title>TEST ManggaDB</title>
 </head>
+
 <body>
-    ok
+
+    <div id="form-tambah">
+        <h3>TAMBAH DATA</h3>
+        <input type="text" id="value_tambah_nama" placeholder="nama..." onkeyup="validasi_value_tambah()">
+        <input type="text" id="value_tambah_asal" placeholder="asal..." onkeyup="validasi_value_tambah()">
+        <input type="text" id="value_tambah_sekolah" placeholder="sekolah..." onkeyup="validasi_value_tambah()">
+        <input type="text" id="value_tambah_umur" placeholder="umur..." onkeyup="validasi_value_tambah()">
+        <button onclick="tambah()" id="btn-tambah" style="display: none;">tambah</button>
+    </div>
+    <div style="display: none;" id="form-edit">
+        <h3>EDIT DATA</h3>
+        <input type="hidden" id="value_edit_id">
+        <input type="text" id="value_edit_nama" placeholder="nama...">
+        <input type="text" id="value_edit_asal" placeholder="asal...">
+        <input type="text" id="value_edit_sekolah" placeholder="sekolah...">
+        <input type="text" id="value_edit_umur" placeholder="umur...">
+        <button onclick="ubah()">edit</button>
+    </div>
+    <div style="display: none;" id="form-hapus">
+        <h3>APA KAMU YAKIN INGIN MENGHAPUS "<span id="from-hapus-nama"></span>" ?</h3>
+        <input type="hidden" id="value_hapus_id">
+        <button onclick="hapus()">hapus</button>
+        <button onclick="batal_hapus()">tidak jadi</button>
+    </div>
+
+    <div>
+        <h3>LIST DATA</h3>
+        <table id="myTable">
+
+        </table>
+    </div>
+    <script>
+        window.onload = () => {
+            document.getElementById("value_tambah_nama").value = "";
+            document.getElementById("value_tambah_asal").value = "";
+            document.getElementById("value_tambah_sekolah").value = "";
+            document.getElementById("value_tambah_umur").value = "";
+            tampil()
+        }
+
+        function validasi_value_tambah() {
+            var ok = 0;
+            if (document.getElementById("value_tambah_nama").value != "") {
+                ok++;
+            }
+            if (document.getElementById("value_tambah_asal").value != "") {
+                ok++;
+            }
+            if (document.getElementById("value_tambah_sekolah").value != "") {
+                ok++;
+            }
+            if (document.getElementById("value_tambah_umur").value != "") {
+                ok++;
+            }
+
+            if (ok == 4) {
+                document.getElementById("btn-tambah").style.display = "";
+            } else {
+                document.getElementById("btn-tambah").style.display = "none";
+            }
+        }
+
+        function tambah() {
+            var value_tambah_nama = document.getElementById("value_tambah_nama").value;
+            var value_tambah_asal = document.getElementById("value_tambah_asal").value;
+            var value_tambah_sekolah = document.getElementById("value_tambah_sekolah").value;
+            var value_tambah_umur = document.getElementById("value_tambah_umur").value;
+            Mangga.tambah('user', {
+                nama: value_tambah_nama,
+                asal: value_tambah_asal,
+                sekolah: value_tambah_sekolah,
+                umur: value_tambah_umur
+            }, function(error, response) {
+                if (error) {
+                    console.log('Error: ', error);
+                } else {
+                    document.getElementById("btn-tambah").style.display = "none";
+                    console.log(response.pesan);
+                    document.getElementById("value_tambah_nama").value = "";
+                    document.getElementById("value_tambah_asal").value = "";
+                    document.getElementById("value_tambah_sekolah").value = "";
+                    document.getElementById("value_tambah_umur").value = "";
+                    tampil()
+                }
+            });
+        }
+
+        function ubah() {
+            document.getElementById("form-tambah").style.display = "";
+            document.getElementById("form-edit").style.display = "none";
+            document.getElementById("form-hapus").style.display = "none";
+
+            var id = document.getElementById("value_edit_id").value;
+            var nama = document.getElementById("value_edit_nama").value;
+            var asal = document.getElementById("value_edit_asal").value;
+            var sekolah = document.getElementById("value_edit_sekolah").value;
+            var umur = document.getElementById("value_edit_umur").value;
+
+            Mangga.ubah('user', Query.samaDengan("id", id), [
+                    Query.samaDengan("nama", nama),
+                    Query.samaDengan("asal", asal),
+                    Query.samaDengan("sekolah", sekolah),
+                    Query.samaDengan("umur", umur)
+                ],
+                function(error, response) {
+                    if (error) {
+                        console.log('Error: ', error);
+                    } else {
+                        console.log(response.pesan);
+                        tampil()
+                    }
+                }
+            );
+
+        }
+
+        function hapus() {
+            var id = document.getElementById("value_hapus_id").value;
+            Mangga.hapus('user', Query.samaDengan('id', id), function(error, response) {
+                if (error) {
+                    console.log('Error: ', error);
+                } else {
+                    console.log(response.pesan);
+
+                    document.getElementById("form-tambah").style.display = "";
+                    document.getElementById("form-edit").style.display = "none";
+                    document.getElementById("form-hapus").style.display = "none";
+                    tampil()
+                }
+            })
+        }
+
+        function tampil() {
+            Mangga.tampil("user", "*", function(error, response) {
+                if (error) {
+                    console.log('Error: ', error);
+                } else {
+                    // console.log(response);
+
+                    var no = 0;
+                    var table = document.getElementById("myTable");
+                    table.innerHTML = "";
+                    var content = "<tr><th>No</th><th>Nama</th><th>Asal</th><th>Sekolah</th><th>Umur</th><th>Action</th></tr>";
+                    response.forEach(a => {
+                        no++;
+                        var new_a = JSON.parse(a);
+                        content += `<tr>`;
+                        content += `<td>${no}</td>`;
+                        content += `<td>${new_a.nama}</td>`;
+                        content += `<td>${new_a.asal}</td>`;
+                        content += `<td>${new_a.sekolah}</td>`;
+                        content += `<td>${new_a.umur}</td>`;
+                        content += `
+                            <td>
+                                <button id="${new_a._id}" onclick="klik_edit(this.id)"  data-nama="${new_a.nama}" data-asal="${new_a.asal}" data-sekolah="${new_a.sekolah}" data-umur="${new_a.umur}" >edit</button>
+                                <button id="${new_a._id}" onclick="klik_hapus(this.id)" data-nama="${new_a.nama}" >hapus</button>
+                            </td>`;
+                        content += `</tr>`;
+                    });
+                    table.innerHTML = content;
+                }
+            })
+        }
+
+        function klik_edit(id) {
+            document.getElementById("form-tambah").style.display = "none";
+            document.getElementById("form-edit").style.display = "";
+            document.getElementById("form-hapus").style.display = "none";
+
+            var btn_edit = document.querySelector(`#${id}`);
+
+            document.getElementById("value_edit_id").value = id;
+            document.getElementById("value_edit_nama").value = btn_edit.dataset.nama;
+            document.getElementById("value_edit_asal").value = btn_edit.dataset.asal;
+            document.getElementById("value_edit_sekolah").value = btn_edit.dataset.sekolah;
+            document.getElementById("value_edit_umur").value = btn_edit.dataset.umur;
+        }
+
+        function klik_hapus(id) {
+            document.getElementById("form-tambah").style.display = "none";
+            document.getElementById("form-edit").style.display = "none";
+            document.getElementById("form-hapus").style.display = "";
+
+            var btn_hapus = document.querySelector(`#${id}`);
+            document.getElementById("value_hapus_id").value = id;
+            document.getElementById("from-hapus-nama").innerHTML = btn_hapus.dataset.nama;
+        }
+
+        function batal_hapus() {
+            document.getElementById("form-tambah").style.display = "";
+            document.getElementById("form-edit").style.display = "none";
+            document.getElementById("form-hapus").style.display = "none";
+
+            document.getElementById("value_hapus_id").value = "";
+            document.getElementById("from-hapus-nama").innerHTML = "";
+        }
+    </script>
+    <script src="/database.js"></script>
 </body>
+
 </html>
